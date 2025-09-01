@@ -1,6 +1,6 @@
 # main.py
-import pygame
-import sys
+import pygame #引入的依赖库
+import sys    #sys 是 Python 标准库中的一个模块，提供了与 Python 解释器及其环境交互的功能
 import traceback
 import myplane
 import enemy
@@ -10,14 +10,26 @@ import supply
 from pygame.locals import *
 from random import *
 
+'''
+是 Pygame 库的初始化函数
+在使用 Pygame 开发任何程序时，必须首先调用该函数，
+否则后续的 Pygame 功能（如创建窗口、加载图像、处理输入）都无法正常工作
+重复调用无害
+'''
 pygame.init()
+success, failure = pygame.init()
+print(f"成功初始化 {success} 个模块，失败 {failure} 个模块")
 pygame.mixer.init()
+'''是 Pygame 中专门用于初始化音频混合器模块的函数，
+负责启动 Pygame 的声音处理功能，包括背景音乐播放、音效处理等'''
 
 bg_size = width, height = 480, 700
-screen = pygame.display.set_mode(bg_size)
-pygame.display.set_caption("飞机大战 -- FishC Demo")
+print(f"游戏窗口大小 {width} x {height}")
+print(f"bg_size,{bg_size}") #(480, 700)
+screen = pygame.display.set_mode(bg_size)  #初始化一个窗口
+pygame.display.set_caption("飞机大战 -- FishC Demo") #设置游戏窗口标题
 
-background = pygame.image.load("images/background.png").convert()
+background = pygame.image.load("images/background.png").convert()  #加载背景图片
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -25,17 +37,20 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 # 载入游戏音乐
-pygame.mixer.music.load("sound/game_music.ogg")
-pygame.mixer.music.set_volume(0.2)
-bullet_sound = pygame.mixer.Sound("sound/bullet.wav")
+pygame.mixer.music.load("sound/game_music.ogg")  #加载游戏背景音乐
+pygame.mixer.music.set_volume(0.2)  #设置音量
+bullet_sound = pygame.mixer.Sound("sound/bullet.wav") 
+'''
+加载一个音效文件
+返回一个音效对象，后续可以控制这个音效的相关属性和行为 大小 播放和音量等等'''
 bullet_sound.set_volume(0.2)
 bomb_sound = pygame.mixer.Sound("sound/use_bomb.wav")
-bomb_sound.set_volume(0.2)
-supply_sound = pygame.mixer.Sound("sound/supply.wav")
+bomb_sound.set_volume(0.2) #爆炸音效
+supply_sound = pygame.mixer.Sound("sound/supply.wav") #补给包音效
 supply_sound.set_volume(0.2)
-get_bomb_sound = pygame.mixer.Sound("sound/get_bomb.wav")
+get_bomb_sound = pygame.mixer.Sound("sound/get_bomb.wav") #获得炸弹音效
 get_bomb_sound.set_volume(0.2)
-get_bullet_sound = pygame.mixer.Sound("sound/get_bullet.wav")
+get_bullet_sound = pygame.mixer.Sound("sound/get_bullet.wav") #
 get_bullet_sound.set_volume(0.2)
 upgrade_sound = pygame.mixer.Sound("sound/upgrade.wav")
 upgrade_sound.set_volume(0.2)
