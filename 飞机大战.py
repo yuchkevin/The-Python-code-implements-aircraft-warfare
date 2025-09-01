@@ -65,33 +65,33 @@ enemy3_down_sound.set_volume(0.5)
 me_down_sound = pygame.mixer.Sound("sound/me_down.wav")
 me_down_sound.set_volume(0.2)
 
-
+#这个应该是添加小型敌机的函数，bg_size 全局变量直接用是吗？
 def add_small_enemies(group1, group2, num):
     for i in range(num):
         e1 = enemy.SmallEnemy(bg_size)
         group1.add(e1)
         group2.add(e1)
 
-
+#这个应该是添加中型敌机的函数 
 def add_mid_enemies(group1, group2, num):
     for i in range(num):
         e2 = enemy.MidEnemy(bg_size)
         group1.add(e2)
         group2.add(e2)
 
-
+#这个应该是添加大型敌机的函数
 def add_big_enemies(group1, group2, num):
     for i in range(num):
         e3 = enemy.BigEnemy(bg_size)
         group1.add(e3)
         group2.add(e3)
 
-
+#加速度
 def inc_speed(target, inc):
     for each in target:
         each.speed += inc
 
-
+#主函数？？？？？？
 def main():
     pygame.mixer.music.play(-1)
     
@@ -575,7 +575,8 @@ def main():
         pygame.display.flip()
         clock.tick(60)
 
-
+#不是一个函数，而是 Python 中的一个条件判断语句，
+# #它的作用是判断当前脚本是否被直接运行，从而决定是否执行其内部的代码块
 if __name__ == "__main__":
     try:
         main()
