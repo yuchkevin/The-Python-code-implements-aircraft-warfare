@@ -411,7 +411,7 @@ def main():
                 else:
                     # 毁灭
                     if not (delay % 3):  # 每3帧更新一次爆炸动画
-                        if e3_destroy_index == 0: # 首次进入销毁状态时播放爆炸音效
+                        if e3_destroy_index == 0: # 首次进入销毁状态时播放爆炸音效 ？？？？？？？
                             enemy3_down_sound.play()
                             # 绘制当前帧的爆炸图片
                         screen.blit(each.destroy_images[e3_destroy_index], each.rect)
@@ -479,19 +479,19 @@ def main():
             
             # 检测我方飞机是否被撞
             enemies_down = pygame.sprite.spritecollide(me, enemies, False, pygame.sprite.collide_mask)
-            if enemies_down and not me.invincible:
+            if enemies_down and not me.invincible:   # 我方飞机被击中并且不是无敌状态
                 me.active = False
                 for e in enemies_down:
-                    e.active = False
+                    e.active = False  # 敌机消失
             
             # 绘制我方飞机
-            if me.active:
+            if me.active: #也是刷新吗？？？？？
                 if switch_image:
                     screen.blit(me.image1, me.rect)
                 else:
                     screen.blit(me.image2, me.rect)
             else:
-                # 毁灭
+                # 毁灭 ？？？？？？？？？？？？
                 if not (delay % 3):
                     if me_destroy_index == 0:
                         me_down_sound.play()
@@ -505,8 +505,8 @@ def main():
             # 绘制全屏炸弹数量
             bomb_text = bomb_font.render("× %d" % bomb_num, True, WHITE)
             text_rect = bomb_text.get_rect()
-            screen.blit(bomb_image, (10, height - 10 - bomb_rect.height))
-            screen.blit(bomb_text, (20 + bomb_rect.width, height - 5 - text_rect.height))
+            screen.blit(bomb_image, (10, height - 10 - bomb_rect.height)) #位置
+            screen.blit(bomb_text, (20 + bomb_rect.width, height - 5 - text_rect.height)) #数量
             
             # 绘制剩余生命数量
             if life_num:
@@ -589,14 +589,16 @@ def main():
         screen.blit(paused_image, paused_rect)
         
         # 切换图片
-        if not (delay % 5):
+        if not (delay % 5):  # 每5帧切换一次图片
             switch_image = not switch_image
         
         delay -= 1
-        if not delay:
+        if not delay: #delay`=0时，刷新delay=100
             delay = 100
-        
+        ## 4. 刷新屏幕，显示所有绘制内容 
+        #如果没有这行代码，所有绘制操作只会停留在内存中，屏幕会一直显示初始画面，玩家看不到任何更新
         pygame.display.flip()
+        #是 Pygame 中用于控制游戏帧率的核心代码，作用是确保游戏每秒最多刷新 60 次
         clock.tick(60)
 
 #不是一个函数，而是 Python 中的一个条件判断语句，
