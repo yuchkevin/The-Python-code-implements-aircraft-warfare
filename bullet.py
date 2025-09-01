@@ -3,8 +3,8 @@ import pygame
 
 class Bullet1(pygame.sprite.Sprite):
         #继承自 pygame.sprite.Sprite（Pygame 精灵类，用于简化游戏元素的碰撞检测和批量处理）
-
-    def __init__(self, position):#构造函数
+# position   是构建函数的时候传过来的参数位置
+    def __init__(self, position):#构造函数。这是
         pygame.sprite.Sprite.__init__(self)
         
         self.image = pygame.image.load("images/bullet1.png").convert_alpha()
@@ -32,7 +32,7 @@ class Bullet2(pygame.sprite.Sprite):
         
         self.image = pygame.image.load("images/bullet2.png").convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = position
+        self.rect.left, self.rect.top = position #python 一个参数赋值两个也是可以的？
         self.speed = 14
         self.active = False
         self.mask = pygame.mask.from_surface(self.image)

@@ -68,6 +68,7 @@ me_down_sound.set_volume(0.2)
 #这个应该是添加小型敌机的函数，bg_size 全局变量直接用是吗？
 def add_small_enemies(group1, group2, num):
     for i in range(num):
+        #生成小飞机
         e1 = enemy.SmallEnemy(bg_size)
         group1.add(e1)
         group2.add(e1)
@@ -91,17 +92,21 @@ def inc_speed(target, inc):
     for each in target:
         each.speed += inc
 
-#主函数？？？？？？
+#主函数不会主动执行，还是需要手动调用
 def main():
+    # 播放背景音乐，-1 表示循环播放
     pygame.mixer.music.play(-1)
-    
+
     # 生成我方飞机
     me = myplane.MyPlane(bg_size)
     
+    # 3. 初始化敌机精灵组   是用来存放敌机的？?????x
     enemies = pygame.sprite.Group()
     
-    # 生成敌方小型飞机
+    # 这个是定义小飞机组
     small_enemies = pygame.sprite.Group()
+    
+    # 生成敌方小型飞机 ，放在小飞机组和飞机组
     add_small_enemies(small_enemies, enemies, 15)
     
     # 生成敌方中型飞机
@@ -117,17 +122,18 @@ def main():
     bullet1_index = 0
     BULLET1_NUM = 4
     for i in range(BULLET1_NUM):
-        bullet1.append(bullet.Bullet1(me.rect.midtop))
+        bullet1.append(bullet.Bullet1(me.rect.midtop)) #子弹位置设为我方飞机位置的中上方
     
     # 生成超级子弹
     bullet2 = []
     bullet2_index = 0
     BULLET2_NUM = 8
-    for i in range(BULLET2_NUM // 2):
+    for i in range(BULLET2_NUM // 2): #// 整数除法，向下取整，类似于java的两个整数相除
         bullet2.append(bullet.Bullet2((me.rect.centerx - 33, me.rect.centery)))
         bullet2.append(bullet.Bullet2((me.rect.centerx + 30, me.rect.centery)))
+        #一次循环是生成两个子弹对象 ，一个在左一个在右
     
-    clock = pygame.time.Clock()
+    clock = pygame.time.Clock() #会创建一个 时钟对象，用于控制游戏的刷新频率
     
     # 中弹图片索引
     e1_destroy_index = 0
@@ -137,22 +143,22 @@ def main():
     
     # 统计得分
     score = 0
-    score_font = pygame.font.Font("font/font.ttf", 36)
+    score_font = pygame.font.Font("font/font.ttf", 36)   #加载字体
     
-    # 标志是否暂停游戏
-    paused = False
-    pause_nor_image = pygame.image.load("images/pause_nor.png").convert_alpha()
+    
+    paused = False# 标志是否暂停游戏
+    pause_nor_image = pygame.image.load("images/pause_nor.png").convert_alpha() #暂停按钮
     pause_pressed_image = pygame.image.load("images/pause_pressed.png").convert_alpha()
     resume_nor_image = pygame.image.load("images/resume_nor.png").convert_alpha()
     resume_pressed_image = pygame.image.load("images/resume_pressed.png").convert_alpha()
-    paused_rect = pause_nor_image.get_rect()
-    paused_rect.left, paused_rect.top = width - paused_rect.width - 10, 10
+    paused_rect = pause_nor_image.get_rect()  #暂停按钮矩形
+    paused_rect.left, paused_rect.top = width - paused_rect.width - 10, 10 # 距离左边和上边各10个距离
     paused_image = pause_nor_image
     
     # 设置难度级别
     level = 1
     
-    # 全屏炸弹
+    # 全屏炸弹 参数相关设置  参数相关设置
     bomb_image = pygame.image.load("images/bomb.png").convert_alpha()
     bomb_rect = bomb_image.get_rect()
     bomb_font = pygame.font.Font("font/font.ttf", 48)
@@ -160,8 +166,9 @@ def main():
     
     # 每30秒发放一个补给包
     bullet_supply = supply.Bullet_Supply(bg_size)
-    bomb_supply = supply.Bomb_Supply(bg_size)
-    SUPPLY_TIME = USEREVENT
+    bomb_supply = supply.Bomb_Supply(bg_size) #超级子弹补给包
+    SUPPLY_TIME = USEREVENT   # SUPPLY_TIME = 24  主要是为了区分不同的事件类型
+    #Pygame 中用于定时触发自定义事件的核心函数，在你的飞机大战代码中，它的作用是每 30 秒自动生成一个补给包
     pygame.time.set_timer(SUPPLY_TIME, 30 * 1000)
     
     # 超级子弹定时器
@@ -173,7 +180,7 @@ def main():
     # 解除我方无敌状态定时器
     INVINCIBLE_TIME = USEREVENT + 2
     
-    # 生命数量
+    # 生命数量   初始3条生命
     life_image = pygame.image.load("images/life.png").convert_alpha()
     life_rect = life_image.get_rect()
     life_num = 3
@@ -196,26 +203,35 @@ def main():
     
     running = True
     
-    while running:
+    while running: #循环条件
+        #是 Pygame 中处理用户输入和系统事件的核心循环结构，
+        #用于捕获并处理游戏中发生的所有事件（如键盘按键、鼠标点击、窗口操作等）
         for event in pygame.event.get():
-            if event.type == QUIT:
+            #触发时机：用户点击窗口右上角的关闭按钮（×）
+            if event.type == QUIT: #点击关闭按钮退出游戏
                 pygame.quit()
                 sys.exit()
             
             elif event.type == MOUSEBUTTONDOWN:
+                #Pygame 中规定：1 代表鼠标左键，3 代表鼠标右键，2 代表滚轮点击，用户点击的是鼠标左键
+                #并且 点击左键的位置在 暂停按钮矩形范围内
+                #collidepoint() 是 Pygame 矩形对象的方法，用于判断一个点是否在矩形内部
                 if event.button == 1 and paused_rect.collidepoint(event.pos):
+                    #核心作用是反转 “暂停状态” 的布尔值
                     paused = not paused
                     if paused:
+                        ## 暂停时：停止补给定时器、暂停背景音乐和所有音效
                         pygame.time.set_timer(SUPPLY_TIME, 0)
                         pygame.mixer.music.pause()
                         pygame.mixer.pause()
                     else:
+                        #这个意思是继续游戏，恢复补给定时器、恢复背景音乐和所有音效
                         pygame.time.set_timer(SUPPLY_TIME, 30 * 1000)
                         pygame.mixer.music.unpause()
                         pygame.mixer.unpause()
             
-            elif event.type == MOUSEMOTION:
-                if paused_rect.collidepoint(event.pos):
+            elif event.type == MOUSEMOTION: #鼠标移动事件
+                if paused_rect.collidepoint(event.pos):  #切换暂停按钮的图片
                     if paused:
                         paused_image = resume_pressed_image
                     else:
@@ -226,30 +242,32 @@ def main():
                     else:
                         paused_image = pause_nor_image
             
-            elif event.type == KEYDOWN:
-                if event.key == K_SPACE:
-                    if bomb_num:
+            elif event.type == KEYDOWN: #键盘按键事件
+                if event.key == K_SPACE: # 空格键
+                    if bomb_num: #如果有炸弹
                         bomb_num -= 1
-                        bomb_sound.play()
-                        for each in enemies:
-                            if each.rect.bottom > 0:
+                        bomb_sound.play() #音效
+                        for each in enemies: 
+                            if each.rect.bottom > 0: #碰撞检测相关的条件判断，用于筛选出 “已经进入屏幕内” 的敌机，
+                                #底部y轴>0，才会被击中
                                 each.active = False
             
-            elif event.type == SUPPLY_TIME:
-                supply_sound.play()
-                if choice([True, False]):
-                    bomb_supply.reset()
+            elif event.type == SUPPLY_TIME: # 自定义事件 生成补给包
+                supply_sound.play() 
+                if choice([True, False]): #随机生成炸弹补给或子弹补给
+                    bomb_supply.reset() #激活炸弹补给
                 else:
-                    bullet_supply.reset()
+                    bullet_supply.reset() #激活子弹补给
             
-            elif event.type == DOUBLE_BULLET_TIME:
-                is_double_bullet = False
-                pygame.time.set_timer(DOUBLE_BULLET_TIME, 0)
+            elif event.type == DOUBLE_BULLET_TIME: #超级子弹定时器
+                is_double_bullet = False # # 关闭超级子弹模式
+                pygame.time.set_timer(DOUBLE_BULLET_TIME, 0) ## 停止该定时器
             
-            elif event.type == INVINCIBLE_TIME:
-                me.invincible = False
+            elif event.type == INVINCIBLE_TIME: #解除我方无敌状态定时器
+                me.invincible = False 
                 pygame.time.set_timer(INVINCIBLE_TIME, 0)
         
+        # 事件处理完成
         # 根据用户的得分增加难度
         if level == 1 and score > 50000:
             level = 2
@@ -290,13 +308,14 @@ def main():
             # 提升小型敌机的速度
             inc_speed(small_enemies, 1)
             inc_speed(mid_enemies, 1)
-        
+        #是 Pygame 中用于绘制图像到游戏窗口的核心操作，作用是将背景图片显示在游戏窗口的指定位置。
         screen.blit(background, (0, 0))
         
+        #如果还有声明 并且没有停止
         if life_num and not paused:
             # 检测用户的键盘操作
             key_pressed = pygame.key.get_pressed()
-            
+            #上下左右移动 飞机
             if key_pressed[K_w] or key_pressed[K_UP]:
                 me.moveUp()
             if key_pressed[K_s] or key_pressed[K_DOWN]:
@@ -307,10 +326,10 @@ def main():
                 me.moveRight()
             
             # 绘制全屏炸弹补给并检测是否获得
-            if bomb_supply.active:
-                bomb_supply.move()
-                screen.blit(bomb_supply.image, bomb_supply.rect)
-                if pygame.sprite.collide_mask(bomb_supply, me):
+            if bomb_supply.active: #这个已经在上面的事件里面激活了
+                bomb_supply.move() #下落
+                screen.blit(bomb_supply.image, bomb_supply.rect) #在屏幕上绘制补给包 
+                if pygame.sprite.collide_mask(bomb_supply, me): #是 Pygame 提供的像素级精确碰撞检测方法
                     get_bomb_sound.play()
                     if bomb_num < 3:
                         bomb_num += 1
@@ -321,15 +340,15 @@ def main():
                 bullet_supply.move()
                 screen.blit(bullet_supply.image, bullet_supply.rect)
                 if pygame.sprite.collide_mask(bullet_supply, me):
-                    get_bullet_sound.play()
-                    is_double_bullet = True
-                    pygame.time.set_timer(DOUBLE_BULLET_TIME, 18 * 1000)
-                    bullet_supply.active = False
+                    get_bullet_sound.play()#播放获取音效，提供听觉反馈
+                    is_double_bullet = True  #激活超级子弹模式
+                    pygame.time.set_timer(DOUBLE_BULLET_TIME, 18 * 1000) #设置18秒后自动关闭超级子弹模式的定时器
+                    bullet_supply.active = False  #关闭补给包 以防下次循环生效
             
             # 发射子弹
-            if not (delay % 10):
+            if not (delay % 10): # 整10触发一次发射子弹
                 bullet_sound.play()
-                if is_double_bullet:
+                if is_double_bullet: # 超级子弹模式
                     bullets = bullet2
                     bullets[bullet2_index].reset((me.rect.centerx - 33, me.rect.centery))
                     bullets[bullet2_index + 1].reset((me.rect.centerx + 30, me.rect.centery))
@@ -342,16 +361,17 @@ def main():
             # 检测子弹是否击中敌机
             for b in bullets:
                 if b.active:
-                    b.move()
+                    b.move() # 移动子弹 
                     screen.blit(b.image, b.rect)
+                    #检测单个精灵（这里是子弹 b）与精灵组（这里是所有敌机 enemies）的碰撞
                     enemy_hit = pygame.sprite.spritecollide(b, enemies, False, pygame.sprite.collide_mask)
-                    if enemy_hit:
-                        b.active = False
-                        for e in enemy_hit:
-                            if e in mid_enemies or e in big_enemies:
-                                e.hit = True
-                                e.energy -= 1
-                                if e.energy == 0:
+                    if enemy_hit: # 子弹击中敌机
+                        b.active = False # 子弹消失
+                        for e in enemy_hit:  
+                            if e in mid_enemies or e in big_enemies: # 中型或大型敌机
+                                e.hit = True # 标记敌机被击中
+                                e.energy -= 1 # 减少敌机的血量
+                                if e.energy == 0: # 敌机血量为0
                                     e.active = False
                             else:
                                 e.active = False
@@ -360,11 +380,11 @@ def main():
             for each in big_enemies:
                 if each.active:
                     each.move()
-                    if each.hit:
-                        screen.blit(each.image_hit, each.rect)
-                        each.hit = False
-                    else:
-                        if switch_image:
+                    if each.hit:  # 若敌机被击中
+                        screen.blit(each.image_hit, each.rect) # 绘制被击中效果
+                        each.hit = False # 重置标记
+                    else: #没有击中两张图片切换，造成一种飞机在运动的错觉
+                        if switch_image: # 切换图片 为什么切换图片？？？？？
                             screen.blit(each.image1, each.rect)
                         else:
                             screen.blit(each.image2, each.rect)
@@ -386,19 +406,23 @@ def main():
                                       each.rect.top - 5), 2)
                     
                     # 即将出现在画面中，播放音效
-                    if each.rect.bottom == -50:
+                    if each.rect.bottom == -50: 
                         enemy3_fly_sound.play(-1)
                 else:
                     # 毁灭
-                    if not (delay % 3):
-                        if e3_destroy_index == 0:
+                    if not (delay % 3):  # 每3帧更新一次爆炸动画
+                        if e3_destroy_index == 0: # 首次进入销毁状态时播放爆炸音效
                             enemy3_down_sound.play()
+                            # 绘制当前帧的爆炸图片
                         screen.blit(each.destroy_images[e3_destroy_index], each.rect)
                         e3_destroy_index = (e3_destroy_index + 1) % 6
                         if e3_destroy_index == 0:
                             enemy3_fly_sound.stop()
                             score += 10000
-                            each.reset()
+                            each.reset()  # 重置敌机（重新入场）  加分
+
+
+
             
             # 绘制中型敌机：
             for each in mid_enemies:
