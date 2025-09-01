@@ -441,9 +441,6 @@ def main():
                             score += 10000
                             each.reset()  # 重置敌机（重新入场）  加分
 
-
-
-            
             # 绘制中型敌机：
             for each in mid_enemies:
                 if each.active:
