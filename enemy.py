@@ -1,7 +1,7 @@
 import pygame
 from random import *
 '''
-敌机定义类'''
+敌机定义类，分为小型敌机（初始化的时候就是true）、中型敌机、大型敌机'''
 #小型敌机（血量少、速度快）
 class SmallEnemy(pygame.sprite.Sprite):
     #继承自 pygame.sprite.Sprite（Pygame 精灵类，用于简化游戏元素的碰撞检测和批量处理）
@@ -24,7 +24,7 @@ class SmallEnemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.width, self.height = bg_size[0], bg_size[1]
         self.speed = 2 #定义敌机的移动速度（垂直方向每秒移动 2 像素，小型敌机速度较快
-        self.active = True #定义敌机的存活状态：True 表示存活（正常显示和移动），False 表示被击落（播放爆炸动画）
+        self.active = True #自定义的属性，定义敌机的存活状态：True 表示存活（正常显示和移动），False 表示被击落（播放爆炸动画）
         # 控制图片的左边界和上边界，初始位置随机
         self.rect.left, self.rect.top = \
             randint(0, self.width - self.rect.width), \
@@ -43,20 +43,20 @@ class SmallEnemy(pygame.sprite.Sprite):
         else:
             self.reset()
     
-    #重置飞机
+    #初始化
     def reset(self):
         self.active = True  #是存活的
+        #位置是是随机的
         self.rect.left, self.rect.top = \
             randint(0, self.width - self.rect.width), \
             randint(-5 * self.height, 0)
 
 #
 class MidEnemy(pygame.sprite.Sprite):
-    energy = 8 #敌机的血量属性
+    energy = 8 #敌机的血量属性的初始化值
     
     def __init__(self, bg_size):
         pygame.sprite.Sprite.__init__(self)
-        
         self.image = pygame.image.load("images/enemy2.png").convert_alpha()
         self.image_hit = pygame.image.load("images/enemy2_hit.png").convert_alpha()
         self.destroy_images = []
@@ -82,7 +82,7 @@ class MidEnemy(pygame.sprite.Sprite):
             self.rect.top += self.speed
         else:
             self.reset()
-    
+    #初始化
     def reset(self): #重置
         self.active = True
         self.energy = MidEnemy.energy

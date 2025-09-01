@@ -1,11 +1,14 @@
 import pygame
 
+'''
+自己的飞机，创建的时候默认就是成活状态'''
 class MyPlane(pygame.sprite.Sprite):
     def __init__(self, bg_size):
         pygame.sprite.Sprite.__init__(self)
 
         self.image1 = pygame.image.load("images/me1.png").convert_alpha() #正常飞行图1
-        self.image2 = pygame.image.load("images/me2.png").convert_alpha() # 正常飞行图2（用于动画切换）
+        self.image2 = pygame.image.load("images/me2.png").convert_alpha() # 正常飞行图2两张图片一样的，只是为了构建动画效果
+
         self.destroy_images = []
         self.destroy_images.extend([\
             pygame.image.load("images/me_destroy_1.png").convert_alpha(), \

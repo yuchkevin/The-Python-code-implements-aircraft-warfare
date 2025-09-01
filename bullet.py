@@ -1,6 +1,7 @@
 import pygame
 
-
+'''
+子弹类，有两种 好像是只有速度的差别'''
 class Bullet1(pygame.sprite.Sprite):
         #继承自 pygame.sprite.Sprite（Pygame 精灵类，用于简化游戏元素的碰撞检测和批量处理）
 # position   是构建函数的时候传过来的参数位置
