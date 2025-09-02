@@ -21,6 +21,7 @@ class Bullet1(pygame.sprite.Sprite):
         if self.rect.top < 0:
             self.active = False
     
+    #这个是激活子弹
     def reset(self, position): 
         self.rect.left, self.rect.top = position
         self.active = True  #置子弹的 self.active 设为 True，
